@@ -285,6 +285,15 @@
     // 判定は丸める前の値で行う
     var ua = pa / qa * 100;
     var ub = pb / qb * 100;
+
+    // 桁が大きすぎて単価が Infinity になると、相対誤差比較が Infinity <= Infinity で成立し、
+    // 「¥∞」と有限値が並んだまま「同じ単価です」と出てしまう。数え直せない入力として弾く
+    if (!isFinite(ua) || !isFinite(ub)) {
+      el.resultBody.hidden = true;
+      el.errorMsg.hidden = false;
+      return;
+    }
+
     el.valA.textContent = money(ua);
     el.valB.textContent = money(ub);
 

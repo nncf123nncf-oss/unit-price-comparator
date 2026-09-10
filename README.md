@@ -46,7 +46,7 @@ start index.html
 
 ## スクリーンショット
 
-`screenshots/` を参照。**2026-09-11時点では未撮影**（社長が撮影予定。撮影指示書は `../../outputs/day-035/screenshot-request.md`）。
+スクリーンショットは準備中です。
 
 ## 既知の問題・未完成部分
 
