@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>単価比較ツール</title>
+<style>
+  :root {
+    --bg: #5B4B9E;
+    --surface: #FFFFFF;
+    --on-bg: #F2EFFA;
+    --text: #241C42;
+    --text-sub: #5B5273;
+    --accent: #1F7A46;
+    --on-accent: #FFFFFF;
+    --cheap-bg: #E6F3EB;
+    --danger: #B3261E;
+    --border: #C9C0E8;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    font-family: system-ui;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--on-bg);
+  }
+  .lead {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--on-bg);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .note-card {
+    padding: 8px 16px;
+  }
+  .note {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-sub);
+    overflow-wrap: break-word;
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--text);
+  }
+  .field {
+    margin-bottom: 16px;
+  }
+  .field:last-child {
+    margin-bottom: 0;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-sub);
+    overflow-wrap: break-word;
+  }
+  input[type="number"] {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0 8px;
+    font-family: system-ui;
+    font-size: 16px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .res-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 8px;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .res-row.cheap {
+    background: var(--cheap-bg);
+  }
+  .res-label {
+    font-size: 14px;
+    color: var(--text-sub);
+    overflow-wrap: break-word;
+  }
+  .res-value {
+    margin-left: auto;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    overflow-wrap: break-word;
+  }
+  .res-flag {
+    flex-basis: 100%;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    overflow-wrap: break-word;
+  }
+  .verdict {
+    margin: 16px 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--accent);
+    overflow-wrap: break-word;
+  }
+  .verdict.flat {
+    color: var(--text);
+  }
+  .basis {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-sub);
+    overflow-wrap: break-word;
+  }
+  .error {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--danger);
+    overflow-wrap: break-word;
+  }
+  button {
+    display: block;
+    width: 100%;
+    height: 48px;
+    font-family: system-ui;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--on-accent);
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>単価比較ツール</h1>
+  <p class="lead">内容量も価格も違う2つを、100あたりの単価で比べます</p>
+
+  <div class="card note-card">
+    <p class="note">A・Bは同じ単位で入れてください（g同士・ml同士・個数同士）</p>
+  </div>
+
+  <div class="card">
+    <h2>商品A</h2>
+    <div class="field">
+      <label for="qtyA">内容量（A・Bで同じ単位）</label>
+      <input type="number" id="qtyA" min="0" max="99999999" step="any" inputmode="decimal" placeholder="300">
+    </div>
+    <div class="field">
+      <label for="priceA">価格（円）</label>
+      <input type="number" id="priceA" min="0" max="99999999" step="any" inputmode="decimal" placeholder="480">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>商品B</h2>
+    <div class="field">
+      <label for="qtyB">内容量（A・Bで同じ単位）</label>
+      <input type="number" id="qtyB" min="0" max="99999999" step="any" inputmode="decimal" placeholder="500">
+    </div>
+    <div class="field">
+      <label for="priceB">価格（円）</label>
+      <input type="number" id="priceB" min="0" max="99999999" step="any" inputmode="decimal" placeholder="750">
+    </div>
+  </div>
+
+  <div class="card" id="resultCard" aria-live="polite">
+    <div id="resultBody">
+      <div class="res-row" id="rowA">
+        <span class="res-label">商品Aの100あたり単価</span>
+        <span class="res-value" id="valA">—</span>
+        <span class="res-flag" id="flagA" hidden>◎ こちらが安い</span>
+      </div>
+      <div class="res-row" id="rowB">
+        <span class="res-label">商品Bの100あたり単価</span>
+        <span class="res-value" id="valB">—</span>
+        <span class="res-flag" id="flagB" hidden>◎ こちらが安い</span>
+      </div>
+      <p class="verdict" id="verdict">内容量と価格を入れると結果が出ます</p>
+      <p class="basis" id="basis" hidden>高い方を100%としたときの差です</p>
+    </div>
+    <p class="error" id="errorMsg" hidden>⚠ 内容量と価格は0より大きい数を入れてください</p>
+  </div>
+
+  <button type="button" id="clearBtn">入力を消す</button>
+</div>
+
+<script>
+(function () {
+  var ids = ['qtyA', 'priceA', 'qtyB', 'priceB'];
+  var el = {};
+  ids.concat(['rowA', 'rowB', 'valA', 'valB', 'flagA', 'flagB',
+              'verdict', 'basis', 'errorMsg', 'resultBody', 'clearBtn'])
+    .forEach(function (id) { el[id] = document.getElementById(id); });
+
+  function readNum(id) {
+    var raw = el[id].value.trim();
+    if (raw === '') { return null; }
+    var n = Number(raw);
+    if (!isFinite(n) || n <= 0) { return null; }
+    return n;
+  }
+
+  function fmt1(n) {
+    return n.toLocaleString('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  }
+
+  // 丸めて0.0になる単価を「¥0.0」と出すと「0円」と誤読されるため、そこだけ文言を変える
+  function money(n) {
+    return (Math.round(n * 10) / 10 === 0) ? '¥0.1未満' : '¥' + fmt1(n);
+  }
+
+  // 浮動小数の丸め誤差で「同額なのに片方に◎が付く」のを防ぐ相対誤差比較
+  function sameUnitPrice(a, b) {
+    return Math.abs(a - b) <= 1e-9 * Math.max(a, b);
+  }
+
+  function render() {
+    var qa = readNum('qtyA');
+    var pa = readNum('priceA');
+    var qb = readNum('qtyB');
+    var pb = readNum('priceB');
+
+    var touched = ids.some(function (id) { return el[id].value.trim() !== ''; });
+    var allValid = qa !== null && pa !== null && qb !== null && pb !== null;
+
+    el.rowA.classList.remove('cheap');
+    el.rowB.classList.remove('cheap');
+    el.flagA.hidden = true;
+    el.flagB.hidden = true;
+    el.verdict.classList.remove('flat');
+
+    if (!touched) {
+      el.errorMsg.hidden = true;
+      el.resultBody.hidden = false;
+      el.valA.textContent = '—';
+      el.valB.textContent = '—';
+      el.verdict.textContent = '内容量と価格を入れると結果が出ます';
+      el.verdict.classList.add('flat');
+      el.basis.hidden = true;
+      return;
+    }
+
+    if (!allValid) {
+      el.resultBody.hidden = true;
+      el.errorMsg.hidden = false;
+      return;
+    }
+
+    el.errorMsg.hidden = true;
+    el.resultBody.hidden = false;
+    el.basis.hidden = true;
+
+    // 判定は丸める前の値で行う
+    var ua = pa / qa * 100;
+    var ub = pb / qb * 100;
+    el.valA.textContent = money(ua);
+    el.valB.textContent = money(ub);
+
+    if (sameUnitPrice(ua, ub)) {
+      el.verdict.textContent = '同じ単価です';
+      el.verdict.classList.add('flat');
+      return;
+    }
+
+    var cheapName = ua < ub ? '商品A' : '商品B';
+    var high = Math.max(ua, ub);
+    var low = Math.min(ua, ub);
+    var diff = (high - low) / high * 100;
+    var shown = Math.round(diff * 10) / 10;
+
+    if (ua < ub) {
+      el.rowA.classList.add('cheap');
+      el.flagA.hidden = false;
+    } else {
+      el.rowB.classList.add('cheap');
+      el.flagB.hidden = false;
+    }
+
+    if (shown === 0) {
+      el.verdict.textContent = '◎ ' + cheapName + 'が安い（ほとんど差はありません）';
+    } else if (shown === 100) {
+      el.verdict.textContent = '◎ ' + cheapName + 'が安い（ほぼ全額分の差があります）';
+    } else {
+      el.verdict.textContent = '◎ ' + cheapName + 'が ' + fmt1(shown) + '% 安い';
+      // 基準の注記は、%を実際に表示している場面だけ出す
+      el.basis.hidden = false;
+    }
+  }
+
+  ids.forEach(function (id) {
+    el[id].addEventListener('input', render);
+  });
+
+  el.clearBtn.addEventListener('click', function () {
+    ids.forEach(function (id) { el[id].value = ''; });
+    render();
+    el.qtyA.focus();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
