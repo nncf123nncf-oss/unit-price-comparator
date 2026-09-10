@@ -42,7 +42,7 @@ start index.html
 - GitHub: https://github.com/nncf123nncf-oss/unit-price-comparator
 - デモ: https://nncf123nncf-oss.github.io/unit-price-comparator/
 - 公開状態: 公開
-- 開発ログ: `../../logs/day-035-2026-09-11.md`
+- 100日100プロダクトチャレンジ 集約ページ: https://nncf123nncf-oss.github.io/100days/
 
 ## スクリーンショット
 
